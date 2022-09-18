@@ -17,11 +17,11 @@ public class ServerTransferView extends JFrame {
         setTitle("Server");
  
         textFieldFilePath = new JTextField();
-        textFieldFilePath.setBounds(20, 262, 450, 25);
+        textFieldFilePath.setBounds(20, 262, 348, 25);
         btnBrowse = new JButton("Browse");
-        btnBrowse.setBounds(20, 292, 80, 25);
+        btnBrowse.setBounds(378, 262, 80, 25);
         btnSendFile = new JButton("Send File");
-        btnSendFile.setBounds(480, 262, 80, 25);
+        btnSendFile.setBounds(471, 262, 80, 25);
         
         textAreaResult = new JTextArea();
         textAreaResult.setBounds(20, 76, 531, 168);
@@ -35,7 +35,7 @@ public class ServerTransferView extends JFrame {
         btnOpenServer = new JButton("Open Server");
         btnOpenServer.setBounds(20, 27, 120, 21);
         getContentPane().add(btnOpenServer);
-        setSize(588, 331);
+        setSize(629, 399);
         setVisible(true);
         // thoát chương trình khi tắt window
         setDefaultCloseOperation(EXIT_ON_CLOSE);

@@ -6,6 +6,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
  
 public class ClientTransferView extends JFrame {
     private static final long serialVersionUID = 1L;
@@ -18,8 +20,11 @@ public class ClientTransferView extends JFrame {
     private JTextField textFieldFilePath;
     private JButton btnSendFile;
     private JTextArea textAreaResult;
+    private JButton btnConnectToServer;
  
-    public ClientTransferView() {
+
+
+	public ClientTransferView() {
         setTitle("Client - truyền file bằng giao thức TCP/IP");
         labelHost = new JLabel("Host:");
         textFieldHost = new JTextField();
@@ -31,11 +36,13 @@ public class ClientTransferView extends JFrame {
         textFieldPort.setBounds(220, 20, 50, 25);
  
         textFieldFilePath = new JTextField();
-        textFieldFilePath.setBounds(20, 262, 450, 25);
+        textFieldFilePath.setBounds(20, 262, 358, 25);
         btnBrowse = new JButton("Browse");
-        btnBrowse.setBounds(20, 292, 80, 25);
+        btnBrowse.setBounds(390, 262, 80, 25);
         btnSendFile = new JButton("Send File");
         btnSendFile.setBounds(480, 262, 80, 25);
+        btnConnectToServer = new JButton("Connect");
+        btnConnectToServer.setBounds(466, 22, 85, 21);
         textAreaResult = new JTextArea();
         textAreaResult.setBounds(20, 76, 531, 168);
  
@@ -46,15 +53,16 @@ public class ClientTransferView extends JFrame {
         getContentPane().add(textFieldFilePath);
         getContentPane().add(btnBrowse);
         getContentPane().add(btnSendFile);
+        getContentPane().add(btnConnectToServer);
         getContentPane().add(textAreaResult);
- 
         getContentPane().setLayout(null);
-        setSize(588, 331);
+        
+        setSize(629, 365);
         setVisible(true);
         // thoát chương trình khi tắt window
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
- 
+	
     public void chooseFile() {
         final JFileChooser fc = new JFileChooser();
         fc.showOpenDialog(this);
@@ -130,4 +138,10 @@ public class ClientTransferView extends JFrame {
     public void setTextAreaResult(JTextArea textAreaResult) {
         this.textAreaResult = textAreaResult;
     }
+    public JButton getBtnConnectToServer() {
+		return btnConnectToServer;
+	}
+	public void setBtnConnectToServer(JButton btnConnectToServer) {
+		this.btnConnectToServer = btnConnectToServer;
+	}
 }

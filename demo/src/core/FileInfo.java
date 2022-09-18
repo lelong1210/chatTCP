@@ -64,6 +64,5 @@ public class FileInfo implements Serializable {
     private int lastByteLength;
     private byte[] dataBytes;
     private String status;
-    // Constructor
-    // getter & setter
+
 }

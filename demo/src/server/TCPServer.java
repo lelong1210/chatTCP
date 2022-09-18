@@ -25,7 +25,11 @@ public class TCPServer extends Thread {
     private Socket client;
     private int port = 9900;
     private JTextArea textAreaLog;
+    private int x = 1;
     
+    public TCPServer(JTextArea textAreaLog) {
+		this.textAreaLog = textAreaLog;
+	}
     public void open() {
         try {
             serverSocket = new ServerSocket(port);
@@ -38,43 +42,37 @@ public class TCPServer extends Thread {
         while (true) {
             Socket server = null;
             DataInputStream inFromClient = null;
-            ObjectInputStream ois = null;
-            ObjectOutputStream oos = null;
+            DataOutputStream outToClient = null;
              
             try {
                 // accept connect from client and create Socket object
                 server = serverSocket.accept();
-                System.out.println("connected to "
-                        + server.getRemoteSocketAddress());
+                System.out.println("connected to " + server.getRemoteSocketAddress());
   
-                // get greeting from client
-                inFromClient = new DataInputStream(server.getInputStream());
-                System.out.println(inFromClient.readUTF());
-  
-                // receive file info
-                ois = new ObjectInputStream(server.getInputStream());
-                FileInfo fileInfo = (FileInfo) ois.readObject();
-                if (fileInfo != null) {
-                    createFile(fileInfo);
+                while(true) {
+                    // get greeting from client
+                	inFromClient = new DataInputStream(server.getInputStream());
+                    String mess = inFromClient.readUTF();
+                    textAreaLog.setText(mess);
+      
+                    outToClient = new DataOutputStream(server.getOutputStream());
+                    outToClient.writeUTF("string from server to client"+x++);
+                    
+                    outToClient = new DataOutputStream(server.getOutputStream());
+                    outToClient.writeUTF("string from server to client"+x++);
+                    
+                    outToClient = new DataOutputStream(server.getOutputStream());
+                    outToClient.writeUTF("string from server to client"+x++);
+                    
+                    outToClient = new DataOutputStream(server.getOutputStream());
+                    outToClient.writeUTF("string from server to client"+x++);
+                    
                 }
-  
-                // confirm that file is received
-                oos = new ObjectOutputStream(server.getOutputStream());
-                fileInfo.setStatus("success");
-                fileInfo.setDataBytes(null);
-                oos.writeObject(fileInfo);
-                  
+               
             } catch (IOException e) {
                 e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            } finally {
-                // close all stream
-                closeStream(ois);
-                closeStream(oos);
-                closeStream(inFromClient);
-                // close session
-                closeSocket(server);
+            }finally {
+
             }
         }
     }
@@ -159,6 +157,11 @@ public class TCPServer extends Thread {
             closeStream(outToServer);
         }
     }
+    public void sendMess() {
+        DataOutputStream outToClient = null;
+        DataInputStream inToClient = null;
+
+    }
     private FileInfo getFileInfo(String sourceFilePath, String destinationDir) {
         FileInfo fileInfo = null;
         BufferedInputStream bis = null;
@@ -180,3 +183,44 @@ public class TCPServer extends Thread {
         return fileInfo;
     }
 }
+/*        try {
+while(true) {
+// make greeting
+outToClient = new DataOutputStream(client.getOutputStream());
+outToClient.writeUTF("Hello from " + client.getLocalSocketAddress());
+
+// get mess            
+inToClient = new DataInputStream(client.getInputStream());
+System.out.println((String)inToClient.readUTF());
+String messOld = this.textAreaLog.getText();
+String mess = (String)inToClient.readUTF();
+
+this.textAreaLog.setText(messOld+"\n"+mess);
+}
+
+} catch (IOException ex) {
+ex.printStackTrace();
+} finally {
+// close all stream
+closeStream(outToClient);
+closeStream(inToClient);
+
+
+
+//                // receive file info
+//                ois = new ObjectInputStream(server.getInputStream());
+//                FileInfo fileInfo = (FileInfo) ois.readObject();
+//                if (fileInfo != null) {
+//                    createFile(fileInfo);
+//                }
+//  
+//                // confirm that file is received
+//                oos = new ObjectOutputStream(server.getOutputStream());
+//                fileInfo.setStatus("success");
+//                fileInfo.setDataBytes(null);
+//                oos.writeObject(fileInfo);
+             
+//                catch (ClassNotFoundException e) {
+//                    e.printStackTrace();
+//                }  
+}*/
