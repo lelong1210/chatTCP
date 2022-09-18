@@ -28,8 +28,10 @@ public class ClientTransferView extends JFrame {
         setTitle("Client - truyền file bằng giao thức TCP/IP");
         labelHost = new JLabel("Host:");
         textFieldHost = new JTextField();
+        textFieldHost.setText("localhost");
         labelPort = new JLabel("Port:");
         textFieldPort = new JTextField();
+        textFieldPort.setText("9900");
         labelHost.setBounds(20, 20, 50, 25);
         textFieldHost.setBounds(55, 20, 120, 25);
         labelPort.setBounds(190, 20, 50, 25);

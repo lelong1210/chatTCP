@@ -89,10 +89,11 @@ public class TCPClient {
 
 	}
 
-	public void sendMess() {
+	public void sendMess(String mess) {
 		try {
 			// make greeting
-			this.outToServer.writeUTF("Hello from " + this.client.getLocalSocketAddress());
+			this.outToServer.writeUTF(this.client.getLocalPort()+"==>"+mess);
+			textAreaLog.append("\n" + this.client.getLocalPort()+"(me)==>"+mess);
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}

@@ -40,7 +40,7 @@ public class ClientTransferController implements ActionListener {
 			thread.start();
 		}
 		if (e.getActionCommand().equals(view.getBtnSendFile().getText())) {
-			this.tcpClient.sendMess();
+			this.tcpClient.sendMess(view.getTextFieldFilePath().getText());
 		}
 	}
 }
