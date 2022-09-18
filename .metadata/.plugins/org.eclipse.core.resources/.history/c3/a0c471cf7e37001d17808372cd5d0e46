@@ -53,7 +53,46 @@ public class TCPServer extends Thread {
 				if(arrayListSocket.size() == 2) {
 					Socket client1 = (Socket) arrayListSocket.get(0);
 					Socket client2 = (Socket) arrayListSocket.get(1);
-					createRoomChat(client1, client2);
+					
+					
+					Thread threadInFromClient = new Thread() {
+						@Override
+						public void run() {
+							try {
+								while(true) {
+									// get input from client
+									DataInputStream inFromClient = new DataInputStream(client1.getInputStream());
+									String messIn = inFromClient.readUTF();
+									textAreaLog.append("\n"+messIn);
+									
+									DataOutputStream outToClient = new DataOutputStream(client2.getOutputStream());
+									outToClient.writeUTF(messIn);
+								}
+							} catch (Exception e) {
+								// TODO: handle exception
+							}
+						}
+					};
+					Thread threadOutToClient = new Thread() {
+						@Override
+						public void run() {
+							try {
+								while(true) {
+									// get input from client
+									DataInputStream inFromClient = new DataInputStream(client2.getInputStream());
+									String messIn = inFromClient.readUTF();
+									textAreaLog.append("\n"+messIn);
+									
+									DataOutputStream outToClient = new DataOutputStream(client1.getOutputStream());
+									outToClient.writeUTF(messIn);
+								}
+							} catch (Exception e) {
+								// TODO: handle exception
+							}
+						}
+					};
+					threadInFromClient.start();
+					threadOutToClient.start();
 				}
 				
 				System.out.println("connected to " + client.getRemoteSocketAddress());
@@ -64,46 +103,8 @@ public class TCPServer extends Thread {
 			// TODO: handle exception
 		}
 	}
-	private void createRoomChat(Socket client1,Socket client2) {
-			
-		Thread threadInFromClient = new Thread() {
-			@Override
-			public void run() {
-				try {
-					while(true) {
-						// get input from client
-						DataInputStream inFromClient = new DataInputStream(client1.getInputStream());
-						String messIn = inFromClient.readUTF();
-						textAreaLog.append("\n"+messIn);
-						
-						DataOutputStream outToClient = new DataOutputStream(client2.getOutputStream());
-						outToClient.writeUTF(messIn);
-					}
-				} catch (Exception e) {
-					// TODO: handle exception
-				}
-			}
-		};
-		Thread threadOutToClient = new Thread() {
-			@Override
-			public void run() {
-				try {
-					while(true) {
-						// get input from client
-						DataInputStream inFromClient = new DataInputStream(client2.getInputStream());
-						String messIn = inFromClient.readUTF();
-						textAreaLog.append("\n"+messIn);
-						
-						DataOutputStream outToClient = new DataOutputStream(client1.getOutputStream());
-						outToClient.writeUTF(messIn);
-					}
-				} catch (Exception e) {
-					// TODO: handle exception
-				}
-			}
-		};
-		threadInFromClient.start();
-		threadOutToClient.start();
+	private void createRoomChat(Socket socket1,Socket socket2) {
+		
 	}
 	private boolean createFile(FileInfo fileInfo) {
 		BufferedOutputStream bos = null;
