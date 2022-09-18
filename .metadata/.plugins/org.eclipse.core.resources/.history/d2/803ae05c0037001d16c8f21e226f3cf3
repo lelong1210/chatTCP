@@ -26,7 +26,7 @@ public class ClientTransferController implements ActionListener {
             String sourceFilePath = view.getTextFieldFilePath().getText();
             if (host != "" && sourceFilePath != "") {
                 // định nghĩa thư mục đích trên server
-                String destinationDir = "D:\\Code\\Code_Java\\ChatTCP\\Server\\";
+                String destinationDir = "D:\\server\\";
                 TCPClient tcpClient = new TCPClient(host, port, 
                     view.getTextAreaResult());
                 tcpClient.connectServer();

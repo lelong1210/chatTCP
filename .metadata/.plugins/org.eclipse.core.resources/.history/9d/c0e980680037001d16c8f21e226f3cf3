@@ -28,6 +28,12 @@ public class TCPClient {
         this.port = port;
         this.textAreaLog = textAreaLog;
     }
+     
+    /**
+     * connect to server
+     * 
+     * @author viettuts.vn
+     */
     public void connectServer() {
         try {
             client = new Socket(host, port);
@@ -38,6 +44,13 @@ public class TCPClient {
             e.printStackTrace();
         }
     }
+ 
+    /**
+     * send file to server
+     * 
+     * @param sourceFilePath
+     * @param destinationDir
+     */
     public void sendFile(String sourceFilePath, String destinationDir) {
         DataOutputStream outToServer = null;
         ObjectOutputStream oos = null;
@@ -73,6 +86,15 @@ public class TCPClient {
             closeStream(outToServer);
         }
     }
+ 
+    /**
+     * get source file info
+     * 
+     * @author viettuts.vn
+     * @param sourceFilePath
+     * @param destinationDir
+     * @return FileInfo
+     */
     private FileInfo getFileInfo(String sourceFilePath, String destinationDir) {
         FileInfo fileInfo = null;
         BufferedInputStream bis = null;
@@ -93,6 +115,12 @@ public class TCPClient {
         }
         return fileInfo;
     }
+ 
+    /**
+     * close socket
+     * 
+     * @author viettuts.vn
+     */
     public void closeSocket() {
         try {
             if (client != null) {
@@ -102,6 +130,12 @@ public class TCPClient {
             e.printStackTrace();
         }
     }
+ 
+    /**
+     * close input stream
+     * 
+     * @author viettuts.vn
+     */
     public void closeStream(InputStream inputStream) {
         try {
             if (inputStream != null) {
@@ -111,6 +145,12 @@ public class TCPClient {
             ex.printStackTrace();
         }
     }
+ 
+    /**
+     * close output stream
+     * 
+     * @author viettuts.vn
+     */
     public void closeStream(OutputStream outputStream) {
         try {
             if (outputStream != null) {
