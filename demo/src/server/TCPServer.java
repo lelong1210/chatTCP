@@ -1,8 +1,11 @@
 package server;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,31 +14,18 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-  
+
+import javax.swing.JTextArea;
+
 import core.FileInfo;
   
 public class TCPServer extends Thread {
     // create serverSocket object
     private ServerSocket serverSocket;
+    private Socket client;
     private int port = 9900;
-  
-    /**
-     * run program
-     * 
-     * @author viettuts.vn
-     * @param args
-     */
-    public static void main(String[] args) {
-        TCPServer tcpServer = new TCPServer();
-        tcpServer.open();
-        tcpServer.start();
-    }
-  
-    /**
-     * open server
-     * 
-     * @author viettuts.vn
-     */
+    private JTextArea textAreaLog;
+    
     public void open() {
         try {
             serverSocket = new ServerSocket(port);
@@ -44,12 +34,6 @@ public class TCPServer extends Thread {
             e.printStackTrace();
         }
     }
-  
-    /**
-     * handle event
-     * 
-     * @author vietuts.vn
-     */
     public void run() {
         while (true) {
             Socket server = null;
@@ -94,23 +78,13 @@ public class TCPServer extends Thread {
             }
         }
     }
-  
-    /**
-     * create file with fileInfo
-     * 
-     * @author viettuts.vn
-     * @param fileInfo
-     * @return file is created or not
-     */
     private boolean createFile(FileInfo fileInfo) {
         BufferedOutputStream bos = null;
          
         try {
             if (fileInfo != null) {
-                File fileReceive = new File(fileInfo.getDestinationDirectory() 
-                        + fileInfo.getFilename());
-                bos = new BufferedOutputStream(
-                        new FileOutputStream(fileReceive));
+                File fileReceive = new File(fileInfo.getDestinationDirectory() + fileInfo.getFilename());
+                bos = new BufferedOutputStream(new FileOutputStream(fileReceive));
                 // write file content
                 bos.write(fileInfo.getDataBytes());
                 bos.flush();
@@ -123,12 +97,6 @@ public class TCPServer extends Thread {
         }
         return true;
     }
-     
-    /**
-     * close socket
-     * 
-     * @author viettuts.vn
-     */
     public void closeSocket(Socket socket) {
         try {
             if (socket != null) {
@@ -138,12 +106,6 @@ public class TCPServer extends Thread {
             e.printStackTrace();
         }
     }
- 
-    /**
-     * close input stream
-     * 
-     * @author viettuts.vn
-     */
     public void closeStream(InputStream inputStream) {
         try {
             if (inputStream != null) {
@@ -153,12 +115,6 @@ public class TCPServer extends Thread {
             ex.printStackTrace();
         }
     }
- 
-    /**
-     * close output stream
-     * 
-     * @author viettuts.vn
-     */
     public void closeStream(OutputStream outputStream) {
         try {
             if (outputStream != null) {
@@ -167,5 +123,60 @@ public class TCPServer extends Thread {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+    }
+    public void sendFile(String sourceFilePath, String destinationDir) {
+        DataOutputStream outToServer = null;
+        ObjectOutputStream oos = null;
+        ObjectInputStream ois = null;
+ 
+        try {
+            // make greeting
+            outToServer = new DataOutputStream(client.getOutputStream());
+            outToServer.writeUTF("Hello from " + client.getLocalSocketAddress());
+ 
+            // get file info
+            FileInfo fileInfo = getFileInfo(sourceFilePath, destinationDir);
+ 
+            // send file
+            oos = new ObjectOutputStream(client.getOutputStream());
+            oos.writeObject(fileInfo);
+ 
+            // get confirmation
+            ois = new ObjectInputStream(client.getInputStream());
+            fileInfo = (FileInfo) ois.readObject();
+            if (fileInfo != null) {
+                textAreaLog.append("send file to client "
+                    + fileInfo.getStatus() + "\n");
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            // close all stream
+            closeStream(oos);
+            closeStream(ois);
+            closeStream(outToServer);
+        }
+    }
+    private FileInfo getFileInfo(String sourceFilePath, String destinationDir) {
+        FileInfo fileInfo = null;
+        BufferedInputStream bis = null;
+        try {
+            File sourceFile = new File(sourceFilePath);
+            bis = new BufferedInputStream(new FileInputStream(sourceFile));
+            fileInfo = new FileInfo();
+            byte[] fileBytes = new byte[(int) sourceFile.length()];
+            // get file info
+            bis.read(fileBytes, 0, fileBytes.length);
+            fileInfo.setFilename(sourceFile.getName());
+            fileInfo.setDataBytes(fileBytes);
+            fileInfo.setDestinationDirectory(destinationDir);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } finally {
+            closeStream(bis);
+        }
+        return fileInfo;
     }
 }

@@ -31,25 +31,25 @@ public class ClientTransferView extends JFrame {
         textFieldPort.setBounds(220, 20, 50, 25);
  
         textFieldFilePath = new JTextField();
-        textFieldFilePath.setBounds(20, 50, 450, 25);
+        textFieldFilePath.setBounds(20, 262, 450, 25);
         btnBrowse = new JButton("Browse");
-        btnBrowse.setBounds(470, 50, 80, 25);
+        btnBrowse.setBounds(20, 292, 80, 25);
         btnSendFile = new JButton("Send File");
-        btnSendFile.setBounds(20, 80, 80, 25);
+        btnSendFile.setBounds(480, 262, 80, 25);
         textAreaResult = new JTextArea();
-        textAreaResult.setBounds(20, 110, 490, 150);
+        textAreaResult.setBounds(20, 76, 531, 168);
  
-        add(labelHost);
-        add(textFieldHost);
-        add(labelPort);
-        add(textFieldPort);
-        add(textFieldFilePath);
-        add(btnBrowse);
-        add(btnSendFile);
-        add(textAreaResult);
+        getContentPane().add(labelHost);
+        getContentPane().add(textFieldHost);
+        getContentPane().add(labelPort);
+        getContentPane().add(textFieldPort);
+        getContentPane().add(textFieldFilePath);
+        getContentPane().add(btnBrowse);
+        getContentPane().add(btnSendFile);
+        getContentPane().add(textAreaResult);
  
-        setLayout(null);
-        setSize(600, 350);
+        getContentPane().setLayout(null);
+        setSize(588, 331);
         setVisible(true);
         // thoát chương trình khi tắt window
         setDefaultCloseOperation(EXIT_ON_CLOSE);

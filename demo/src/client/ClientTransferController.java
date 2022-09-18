@@ -25,8 +25,7 @@ public class ClientTransferController implements ActionListener {
             if (host != "" && sourceFilePath != "") {
                 // định nghĩa thư mục đích trên server
                 String destinationDir = "D:\\Code\\Code_Java\\ChatTCP\\Server\\";
-                TCPClient tcpClient = new TCPClient(host, port, 
-                    view.getTextAreaResult());
+                TCPClient tcpClient = new TCPClient(host, port, view.getTextAreaResult());
                 tcpClient.connectServer();
                 tcpClient.sendFile(sourceFilePath, destinationDir);
                 tcpClient.closeSocket();

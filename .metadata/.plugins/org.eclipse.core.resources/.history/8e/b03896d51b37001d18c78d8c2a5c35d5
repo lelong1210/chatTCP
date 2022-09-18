@@ -1,0 +1,7 @@
+package server;
+
+import java.awt.event.ActionListener;
+
+public class ServerTransferController implements ActionListener {
+	ServerTransferController
+}

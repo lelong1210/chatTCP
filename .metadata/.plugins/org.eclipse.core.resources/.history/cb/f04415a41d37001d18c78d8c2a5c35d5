@@ -1,0 +1,27 @@
+package server;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class ServerTransferController implements ActionListener {
+
+//    public static void main(String[] args) {
+//        TCPServer tcpServer = new TCPServer();
+//        tcpServer.open();
+//        tcpServer.start();
+//    }
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+    private ServerTransferView view;
+    
+    public ServerTransferController(ServerTransferView view) {
+        this.view = view;
+        view.getBtnBrowse().addActionListener(this);
+        view.getBtnSendFile().addActionListener(this);
+        
+    }
+}

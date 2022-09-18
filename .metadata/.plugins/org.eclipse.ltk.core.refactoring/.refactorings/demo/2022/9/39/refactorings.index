@@ -7,3 +7,9 @@
 1663472272727	Delete element
 1663472276626	Move compilation unit
 1663472318095	Rename package 'gui'
+1663479623259	Delete element
+1663479632632	Rename compilation unit 'test.java'
+1663479975588	Copy compilation unit
+1663480389837	Delete element
+1663482297671	Encapsulate field 'btnOpenServer'
+1663482476691	Delete element
