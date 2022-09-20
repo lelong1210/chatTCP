@@ -15,7 +15,7 @@ public class ServerTransferController implements ActionListener {
           tcpServer.start();
         }
         if(e.getActionCommand().equals(view.getBtnSendFile().getText())) {
-        	tcpServer.sendMess();
+//        	tcpServer.sendMess();
         }
 	}
     public ServerTransferController(ServerTransferView view) {

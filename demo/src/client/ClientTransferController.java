@@ -3,6 +3,10 @@ package client;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JOptionPane;
+
+import core.MessInfo;
+
 public class ClientTransferController implements ActionListener {
 	private ClientTransferView view;
 	private TCPClient tcpClient;
@@ -11,7 +15,27 @@ public class ClientTransferController implements ActionListener {
 		this.view = view;
 		view.getBtnBrowse().addActionListener(this);
 		view.getBtnSendFile().addActionListener(this);
-		view.getBtnConnectToServer().addActionListener(this);
+		
+		String host = view.getTextFieldHost().getText().trim();
+		int port = Integer.parseInt(view.getTextFieldPort().getText().trim());
+		view.getTextUsername().setText(view.getUsername());
+		tcpClient = new TCPClient(host, port, view.getTextAreaResult(),view.getTextUsername().getText());
+		tcpClient.connectServer();
+		
+		
+		Thread thread = new Thread() {
+			@Override
+			public void run() {
+				while (true) {
+					try {
+						tcpClient.getMess();
+					}catch (Exception e) {
+						// TODO: handle exception
+					}
+				}
+			}
+		};
+		thread.start();
 	}
 
 	@Override
@@ -19,43 +43,15 @@ public class ClientTransferController implements ActionListener {
 		if (e.getActionCommand().equals(view.getBtnBrowse().getText())) {
 			view.chooseFile();
 		}
-		if (e.getActionCommand().equals(view.getBtnConnectToServer().getText())) {
-			String host = view.getTextFieldHost().getText().trim();
-			int port = Integer.parseInt(view.getTextFieldPort().getText().trim());
-			tcpClient = new TCPClient(host, port, view.getTextAreaResult());
-			tcpClient.connectServer();
-			
-			Thread thread = new Thread() {
-				@Override
-				public void run() {
-					while (true) {
-						try {
-							tcpClient.getMess();
-						}catch (Exception e) {
-							// TODO: handle exception
-						}
-					}
-				}
-			};
-			thread.start();
-		}
 		if (e.getActionCommand().equals(view.getBtnSendFile().getText())) {
-			this.tcpClient.sendMess(view.getTextFieldFilePath().getText());
+			if(view.getTextNameUserReceive().getText().isEmpty()) {
+				String input = JOptionPane.showInputDialog(view.getContentPane(), "nhập user bạn muốn chat");
+				view.getTextNameUserReceive().setText(input);
+			}else {
+				MessInfo messInfo = new MessInfo(view.getTextNameUserReceive().getText(),view.getTextFieldFilePath().getText());
+				this.tcpClient.sendMess(messInfo);
+			}
+
 		}
 	}
 }
-/*
- * if (host != "" && sourceFilePath != "") { // định nghĩa thư mục đích trên
- * server //String destinationDir = "D:\\Code\\Code_Java\\ChatTCP\\Server\\";
- * 
- * String sourceFilePath = view.getTextFieldFilePath().getText();
- * 
- * //tcpClient.sendFile(sourceFilePath, destinationDir); tcpClient.sendMess();
- * tcpClient.closeSocket(); } else { JOptionPane.showMessageDialog(view,
- * "Host, Port " + "và FilePath phải khác rỗng."); } //
- * System.out.println("in sao"); // String host =
- * view.getTextFieldHost().getText().trim(); // int port =
- * Integer.parseInt(view.getTextFieldPort().getText().trim()); // this.tcpClient
- * = new TCPClient(host, port, view.getTextAreaResult()); //
- * this.tcpClient.connectServer(); // this.tcpClient.getMess();
- */

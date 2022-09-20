@@ -11,11 +11,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 import javax.swing.JTextArea;
 
 import core.FileInfo;
+import core.MessInfo;
 
 public class TCPClient {
 	// create Socket object
@@ -25,19 +25,28 @@ public class TCPClient {
 	private DataOutputStream outToServer;
 	private DataInputStream inToServer;
 	private JTextArea textAreaLog;
+	private ObjectOutputStream oos=null;
+	private String username;
 
-	public TCPClient(String host, int port, JTextArea textAreaLog) {
+	public TCPClient(String host, int port, JTextArea textAreaLog,String username) {
 		this.host = host;
 		this.port = port;
 		this.textAreaLog = textAreaLog;
+		this.username = username;
+		
 	}
 
 	public void connectServer() {
 		try {
-			client = new Socket(host, port);
-			outToServer = new DataOutputStream(client.getOutputStream());
-			inToServer = new DataInputStream(client.getInputStream());
+			this.client = new Socket(host, port);
+			this.outToServer = new DataOutputStream(client.getOutputStream());
+			this.inToServer = new DataInputStream(client.getInputStream());
 			textAreaLog.append("connected to server.\n");
+			this.outToServer.writeUTF(this.username);
+			
+			this.oos = new ObjectOutputStream(client.getOutputStream());
+
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -81,19 +90,21 @@ public class TCPClient {
 
 	public void getMess() {
 		try {
-			this.textAreaLog.append("\n" + (String) this.inToServer.readUTF());
-		} catch (IOException e) {
+			ObjectInputStream ois =  new ObjectInputStream(client.getInputStream());
+			MessInfo messInfo = (MessInfo) ois.readObject();
+			this.textAreaLog.append("\n" + (String) messInfo.getMessContent());
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 	}
 
-	public void sendMess(String mess) {
+	public void sendMess(MessInfo mess) {
 		try {
 			// make greeting
-			this.outToServer.writeUTF(this.client.getLocalPort()+"==>"+mess);
-			textAreaLog.append("\n" + this.client.getLocalPort()+"(me)==>"+mess);
+			this.oos.writeObject(mess);
+			textAreaLog.append("\n" + this.client.getLocalPort()+"(me)==>"+mess.getMessContent());
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}

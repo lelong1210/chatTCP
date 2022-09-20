@@ -19,14 +19,15 @@ import java.util.ArrayList;
 import javax.swing.JTextArea;
 
 import core.FileInfo;
+import core.MessInfo;
+import core.UserInfo;
 
 public class TCPServer extends Thread {
 	// create serverSocket object
 	private ServerSocket serverSocket;
 	private int port = 9900;
 	private JTextArea textAreaLog;
-	private ArrayList<Socket> arrayListSocket = new ArrayList<Socket>();
-	private int x = 1;
+	private ArrayList<UserInfo> arrayListSocket = new ArrayList<UserInfo>();
 
 	public TCPServer(JTextArea textAreaLog) {
 		this.textAreaLog = textAreaLog;
@@ -46,36 +47,82 @@ public class TCPServer extends Thread {
 			while (true) {
 				// accept connect from client and create Socket object
 				Socket client = serverSocket.accept();
-				if(arrayListSocket.size() < 2) {
-					arrayListSocket.add(client);
-				}
-				
-				if(arrayListSocket.size() == 2) {
-					Socket client1 = (Socket) arrayListSocket.get(0);
-					Socket client2 = (Socket) arrayListSocket.get(1);
-					createRoomChat(client1, client2);
-				}
-				
-				System.out.println("connected to " + client.getRemoteSocketAddress());
-				
+				// get user
+				DataInputStream inFromClient = new DataInputStream(client.getInputStream());
+				String messIn = inFromClient.readUTF();
+				// create userInfo (login)
+				UserInfo userInfo = new UserInfo(client, messIn);
+	        	arrayListSocket.add(userInfo);
+	        	// get mess info
+	    		Thread threadInFromClient = new Thread() {
+	    			private ObjectInputStream ois = new ObjectInputStream(client.getInputStream());
+	    			private ObjectOutputStream oos =null;
+	    			@Override
+	    			public void run() {
+	    				try {
+    						// get input from client
+	    					while (true) {	    					
+	    		                MessInfo messInfo = (MessInfo) ois.readObject();
+	    						textAreaLog.append("\n" + messInfo.getMessContent());
+	    						System.out.println("Server send from "+userInfo.getUsername()+"to "+messInfo.getUserDes()+" with content: "+messInfo.getMessContent());
+	    						
+	    						for (UserInfo userInfo : arrayListSocket) {
+									if(userInfo.getUsername().equals(messInfo.getUserDes())) {
+										Socket socketOfuserSend = (Socket)userInfo.getSocket();
+										oos = new ObjectOutputStream(socketOfuserSend.getOutputStream());
+										sendMess(oos, messInfo);
+										oos =null;
+										break;
+									}
+								}
+	    					}
+	    				} catch (Exception e) {
+	    					// TODO: handle exception
+	    				}
+	    			}
+	    		};
+	        	threadInFromClient.start();
 
+ 
+                
+				
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
 	}
-	private void createRoomChat(Socket client1,Socket client2) {
-			
+	private void sendMess(ObjectOutputStream oos,MessInfo messInfo) {
+		try {
+			Thread threadSend = new Thread() {
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					try {	
+						oos.writeObject(messInfo);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			};
+			threadSend.start();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	private void createRoomChat(Socket client1, Socket client2) {
+		
 		Thread threadInFromClient = new Thread() {
 			@Override
 			public void run() {
 				try {
-					while(true) {
+					while (true) {
 						// get input from client
 						DataInputStream inFromClient = new DataInputStream(client1.getInputStream());
 						String messIn = inFromClient.readUTF();
-						textAreaLog.append("\n"+messIn);
-						
+						textAreaLog.append("\n" + messIn);
+
 						DataOutputStream outToClient = new DataOutputStream(client2.getOutputStream());
 						outToClient.writeUTF(messIn);
 					}
@@ -88,12 +135,12 @@ public class TCPServer extends Thread {
 			@Override
 			public void run() {
 				try {
-					while(true) {
+					while (true) {
 						// get input from client
 						DataInputStream inFromClient = new DataInputStream(client2.getInputStream());
 						String messIn = inFromClient.readUTF();
-						textAreaLog.append("\n"+messIn);
-						
+						textAreaLog.append("\n" + messIn);
+
 						DataOutputStream outToClient = new DataOutputStream(client1.getOutputStream());
 						outToClient.writeUTF(messIn);
 					}
@@ -104,7 +151,9 @@ public class TCPServer extends Thread {
 		};
 		threadInFromClient.start();
 		threadOutToClient.start();
+		
 	}
+
 	private boolean createFile(FileInfo fileInfo) {
 		BufferedOutputStream bos = null;
 
@@ -190,11 +239,11 @@ public class TCPServer extends Thread {
 		}
 	}
 
-	public void sendMess() {
-		DataOutputStream outToClient = null;
-		DataInputStream inToClient = null;
-
-	}
+//	public void sendMess() {
+//		DataOutputStream outToClient = null;
+//		DataInputStream inToClient = null;
+//
+//	}
 
 	private FileInfo getFileInfo(String sourceFilePath, String destinationDir) {
 		FileInfo fileInfo = null;
@@ -217,13 +266,7 @@ public class TCPServer extends Thread {
 		return fileInfo;
 	}
 
-	public ArrayList<Socket> getArrayListSocket() {
-		return arrayListSocket;
-	}
 
-	public void setArrayListSocket(ArrayList<Socket> arrayListSocket) {
-		this.arrayListSocket = arrayListSocket;
-	}
 }
 /*
  * try { while(true) { // make greeting outToClient = new
