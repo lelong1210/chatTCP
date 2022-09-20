@@ -92,7 +92,7 @@ public class TCPClient {
 		try {
 			ObjectInputStream ois =  new ObjectInputStream(client.getInputStream());
 			MessInfo messInfo = (MessInfo) ois.readObject();
-			this.textAreaLog.append("\n" + (String) messInfo.getMessContent());
+			this.textAreaLog.append("\n" + "("+messInfo.getUserSource()+")"+messInfo.getMessContent());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

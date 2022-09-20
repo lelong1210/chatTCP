@@ -5,6 +5,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
@@ -22,6 +23,7 @@ public class ClientTransferView extends JFrame {
     private JButton btnSendFile;
     private JTextArea textAreaResult;
     private JTextField textNameUserReceive;
+    private JScrollPane scrollableTextArea; 
  
 
 
@@ -78,7 +80,9 @@ public class ClientTransferView extends JFrame {
         btnSendFile = new JButton("Send File");
         btnSendFile.setBounds(597, 368, 80, 25);
         textAreaResult = new JTextArea();
-        textAreaResult.setBounds(20, 104, 657, 254);
+        scrollableTextArea = new JScrollPane(textAreaResult); 
+        scrollableTextArea.setBounds(20, 104, 657, 254);
+        
         textNameUserReceive = new JTextField();
         textNameUserReceive.setBounds(20, 69, 106, 25);
         textNameUserReceive.setEnabled(false);
@@ -90,7 +94,7 @@ public class ClientTransferView extends JFrame {
         getContentPane().add(textFieldFilePath);
         getContentPane().add(btnBrowse);
         getContentPane().add(btnSendFile);
-        getContentPane().add(textAreaResult);
+        getContentPane().add(scrollableTextArea);
         getContentPane().add(labelUsername);
         getContentPane().add(textUsername);
         getContentPane().add(textNameUserReceive);

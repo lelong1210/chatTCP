@@ -2,6 +2,7 @@ package server;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
@@ -12,6 +13,7 @@ public class ServerTransferView extends JFrame {
     private JButton btnSendFile;
     private JTextArea textAreaResult;
     private JButton btnOpenServer;
+    private JScrollPane scrollableTextArea;
     
     public ServerTransferView() {
         setTitle("Server");
@@ -24,11 +26,13 @@ public class ServerTransferView extends JFrame {
         btnSendFile.setBounds(471, 262, 80, 25);
         
         textAreaResult = new JTextArea();
-        textAreaResult.setBounds(20, 76, 531, 168);
+        scrollableTextArea = new JScrollPane(textAreaResult); 
+        scrollableTextArea.setBounds(20, 76, 531, 168);
+        
         getContentPane().add(textFieldFilePath);
         getContentPane().add(btnBrowse);
         getContentPane().add(btnSendFile);
-        getContentPane().add(textAreaResult);
+        getContentPane().add(scrollableTextArea);
  
         getContentPane().setLayout(null);
         

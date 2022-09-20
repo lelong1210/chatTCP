@@ -48,7 +48,7 @@ public class ClientTransferController implements ActionListener {
 				String input = JOptionPane.showInputDialog(view.getContentPane(), "nhập user bạn muốn chat");
 				view.getTextNameUserReceive().setText(input);
 			}else {
-				MessInfo messInfo = new MessInfo(view.getTextNameUserReceive().getText(),view.getTextFieldFilePath().getText());
+				MessInfo messInfo = new MessInfo(view.getTextUsername().getText(),view.getTextNameUserReceive().getText(),view.getTextFieldFilePath().getText());
 				this.tcpClient.sendMess(messInfo);
 			}
 
