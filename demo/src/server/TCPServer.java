@@ -52,52 +52,52 @@ public class TCPServer extends Thread {
 				String messIn = inFromClient.readUTF();
 				// create userInfo (login)
 				UserInfo userInfo = new UserInfo(client, messIn);
-	        	arrayListSocket.add(userInfo);
-	        	// get mess info
-	    		Thread threadInFromClient = new Thread() {
-	    			private ObjectInputStream ois = new ObjectInputStream(client.getInputStream());
-	    			private ObjectOutputStream oos =null;
-	    			@Override
-	    			public void run() {
-	    				try {
-    						// get input from client
-	    					while (true) {	    					
-	    		                MessInfo messInfo = (MessInfo) ois.readObject();
-	    						textAreaLog.append("\n" + messInfo.getMessContent());
-	    						System.out.println("Server send from "+userInfo.getUsername()+"to "+messInfo.getUserDes()+" with content: "+messInfo.getMessContent());
-	    						
-	    						for (UserInfo userInfo : arrayListSocket) {
-									if(userInfo.getUsername().equals(messInfo.getUserDes())) {
-										Socket socketOfuserSend = (Socket)userInfo.getSocket();
+				arrayListSocket.add(userInfo);
+				// get mess info
+				Thread threadInFromClient = new Thread() {
+					private ObjectInputStream ois = new ObjectInputStream(client.getInputStream());
+					private ObjectOutputStream oos = null;
+
+					@Override
+					public void run() {
+						try {
+							// get input from client
+							while (true) {
+								MessInfo messInfo = (MessInfo) ois.readObject();
+								textAreaLog.append("\n" + messInfo.getMessContent());
+								System.out.println("Server send from " + userInfo.getUsername() + "to "
+										+ messInfo.getUserDes() + " with content: " + messInfo.getMessContent());
+
+								for (UserInfo userInfo : arrayListSocket) {
+									if (userInfo.getUsername().equals(messInfo.getUserDes())) {
+										Socket socketOfuserSend = (Socket) userInfo.getSocket();
 										oos = new ObjectOutputStream(socketOfuserSend.getOutputStream());
 										sendMess(oos, messInfo);
-										oos =null;
+										oos = null;
 										break;
 									}
 								}
-	    					}
-	    				} catch (Exception e) {
-	    					// TODO: handle exception
-	    				}
-	    			}
-	    		};
-	        	threadInFromClient.start();
+							}
+						} catch (Exception e) {
+							// TODO: handle exception
+						}
+					}
+				};
+				threadInFromClient.start();
 
- 
-                
-				
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
 	}
-	private void sendMess(ObjectOutputStream oos,MessInfo messInfo) {
+
+	private void sendMess(ObjectOutputStream oos, MessInfo messInfo) {
 		try {
 			Thread threadSend = new Thread() {
 				@Override
 				public void run() {
 					// TODO Auto-generated method stub
-					try {	
+					try {
 						oos.writeObject(messInfo);
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
@@ -110,48 +110,6 @@ public class TCPServer extends Thread {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	private void createRoomChat(Socket client1, Socket client2) {
-		
-		Thread threadInFromClient = new Thread() {
-			@Override
-			public void run() {
-				try {
-					while (true) {
-						// get input from client
-						DataInputStream inFromClient = new DataInputStream(client1.getInputStream());
-						String messIn = inFromClient.readUTF();
-						textAreaLog.append("\n" + messIn);
-
-						DataOutputStream outToClient = new DataOutputStream(client2.getOutputStream());
-						outToClient.writeUTF(messIn);
-					}
-				} catch (Exception e) {
-					// TODO: handle exception
-				}
-			}
-		};
-		Thread threadOutToClient = new Thread() {
-			@Override
-			public void run() {
-				try {
-					while (true) {
-						// get input from client
-						DataInputStream inFromClient = new DataInputStream(client2.getInputStream());
-						String messIn = inFromClient.readUTF();
-						textAreaLog.append("\n" + messIn);
-
-						DataOutputStream outToClient = new DataOutputStream(client1.getOutputStream());
-						outToClient.writeUTF(messIn);
-					}
-				} catch (Exception e) {
-					// TODO: handle exception
-				}
-			}
-		};
-		threadInFromClient.start();
-		threadOutToClient.start();
-		
 	}
 
 	private boolean createFile(FileInfo fileInfo) {
@@ -239,12 +197,6 @@ public class TCPServer extends Thread {
 		}
 	}
 
-//	public void sendMess() {
-//		DataOutputStream outToClient = null;
-//		DataInputStream inToClient = null;
-//
-//	}
-
 	private FileInfo getFileInfo(String sourceFilePath, String destinationDir) {
 		FileInfo fileInfo = null;
 		BufferedInputStream bis = null;
@@ -266,31 +218,4 @@ public class TCPServer extends Thread {
 		return fileInfo;
 	}
 
-
 }
-/*
- * try { while(true) { // make greeting outToClient = new
- * DataOutputStream(client.getOutputStream());
- * outToClient.writeUTF("Hello from " + client.getLocalSocketAddress());
- * 
- * // get mess inToClient = new DataInputStream(client.getInputStream());
- * System.out.println((String)inToClient.readUTF()); String messOld =
- * this.textAreaLog.getText(); String mess = (String)inToClient.readUTF();
- * 
- * this.textAreaLog.setText(messOld+"\n"+mess); }
- * 
- * } catch (IOException ex) { ex.printStackTrace(); } finally { // close all
- * stream closeStream(outToClient); closeStream(inToClient);
- * 
- * 
- * 
- * // // receive file info // ois = new
- * ObjectInputStream(server.getInputStream()); // FileInfo fileInfo = (FileInfo)
- * ois.readObject(); // if (fileInfo != null) { // createFile(fileInfo); // } //
- * // // confirm that file is received // oos = new
- * ObjectOutputStream(server.getOutputStream()); //
- * fileInfo.setStatus("success"); // fileInfo.setDataBytes(null); //
- * oos.writeObject(fileInfo);
- * 
- * // catch (ClassNotFoundException e) { // e.printStackTrace(); // } }
- */

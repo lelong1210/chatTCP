@@ -1,5 +1,7 @@
 package client;
 
+import java.awt.GridLayout;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -8,6 +10,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JPanel;
 
 public class ClientTransferView extends JFrame {
     private static final long serialVersionUID = 1L;
@@ -24,8 +27,27 @@ public class ClientTransferView extends JFrame {
     private JTextArea textAreaResult;
     private JTextField textNameUserReceive;
     private JScrollPane scrollableTextArea; 
+    private JPanel panelMessChat;
+    private JScrollPane scrollListChat;
+    private JButton btnNewMess;
  
 
+
+	public JButton getBtnNewMess() {
+		return btnNewMess;
+	}
+
+	public void setBtnNewMess(JButton btnNewMess) {
+		this.btnNewMess = btnNewMess;
+	}
+
+	public JPanel getPanelMessChat() {
+		return panelMessChat;
+	}
+
+	public void setPanelMessChat(JPanel panelMessChat) {
+		this.panelMessChat = panelMessChat;
+	}
 
 	public JTextField getTextNameUserReceive() {
 		return textNameUserReceive;
@@ -74,19 +96,34 @@ public class ClientTransferView extends JFrame {
         textUsername.setBounds(342, 20, 106, 25);
  
         textFieldFilePath = new JTextField();
-        textFieldFilePath.setBounds(20, 368, 477, 25);
-        btnBrowse = new JButton("Browse");
-        btnBrowse.setBounds(507, 368, 80, 25);
-        btnSendFile = new JButton("Send File");
-        btnSendFile.setBounds(597, 368, 80, 25);
-        textAreaResult = new JTextArea();
-        scrollableTextArea = new JScrollPane(textAreaResult); 
-        scrollableTextArea.setBounds(20, 104, 657, 254);
+        textFieldFilePath.setBounds(367, 522, 477, 25);
         
+        btnBrowse = new JButton("Browse");
+        btnBrowse.setBounds(854, 522, 80, 25);
+        btnSendFile = new JButton("Send File");
+        btnSendFile.setBounds(944, 522, 80, 25);
+        btnNewMess = new JButton("New Mess");
+        btnNewMess.setBounds(10, 65, 349, 46);
+        
+        textAreaResult = new JTextArea();
         textNameUserReceive = new JTextField();
-        textNameUserReceive.setBounds(20, 69, 106, 25);
+        textNameUserReceive.setBounds(368, 65, 106, 25);
         textNameUserReceive.setEnabled(false);
+        
+        scrollableTextArea = new JScrollPane(textAreaResult); 
+        scrollableTextArea.setBounds(369, 100, 655, 412);
+        
+
+        
+        panelMessChat = new JPanel(new GridLayout(0,1));
+        BoxLayout boxlayout = new BoxLayout(panelMessChat, BoxLayout.Y_AXIS);
+        panelMessChat.setLayout(boxlayout);
  
+        scrollListChat  = new JScrollPane(panelMessChat);
+        scrollListChat.setBounds(10, 121, 347, 426);
+
+
+        
         getContentPane().add(labelHost);
         getContentPane().add(textFieldHost);
         getContentPane().add(labelPort);
@@ -98,15 +135,19 @@ public class ClientTransferView extends JFrame {
         getContentPane().add(labelUsername);
         getContentPane().add(textUsername);
         getContentPane().add(textNameUserReceive);
+        getContentPane().add(scrollListChat);
+        getContentPane().add(btnNewMess);
         getContentPane().setLayout(null);
         
-        setSize(731, 470);
+
+        setSize(1059, 619);
         setVisible(true);
+        setResizable(false);
         // thoát chương trình khi tắt window
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
-	
-    public void chooseFile() {
+
+	public void chooseFile() {
         final JFileChooser fc = new JFileChooser();
         fc.showOpenDialog(this);
         try {
