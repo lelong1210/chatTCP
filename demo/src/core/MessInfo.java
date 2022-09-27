@@ -32,10 +32,19 @@ public class MessInfo implements Serializable {
 	private String userSource;
 	private String userDes;
 	private String MessContent;
+	private FileInfo fileInfo;
 
-	public MessInfo(String userSource, String userDes, String MessContent) {
+	public MessInfo(String userSource, String userDes, String MessContent,FileInfo fileInfo) {
 		this.userDes = userDes;
 		this.MessContent = MessContent;
 		this.userSource = userSource;
+	}
+
+	public FileInfo getFileInfo() {
+		return fileInfo;
+	}
+
+	public void setFileInfo(FileInfo fileInfo) {
+		this.fileInfo = fileInfo;
 	}
 }

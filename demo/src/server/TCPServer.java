@@ -1,11 +1,8 @@
 package server;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -64,10 +61,18 @@ public class TCPServer extends Thread {
 							// get input from client
 							while (true) {
 								MessInfo messInfo = (MessInfo) ois.readObject();
-								textAreaLog.append("\n" + messInfo.getMessContent());
-								System.out.println("Server send from " + userInfo.getUsername() + "to "
+								textAreaLog.append("\n Server send from " + userInfo.getUsername() + " to "
 										+ messInfo.getUserDes() + " with content: " + messInfo.getMessContent());
 
+								// check send file
+								if (messInfo.getFileInfo() != null) {
+									FileInfo fileInfo = (FileInfo) messInfo.getFileInfo();
+									createFile(fileInfo);
+									fileInfo.setDestinationDirectory("D:\\Code\\Code_Java\\ChatTCP\\Client\\");
+									fileInfo.setSourceDirectory(fileInfo.getDestinationDirectory()+fileInfo.getFilename());
+								} 
+								
+								// find users and send mess
 								for (UserInfo userInfo : arrayListSocket) {
 									if (userInfo.getUsername().equals(messInfo.getUserDes())) {
 										Socket socketOfuserSend = (Socket) userInfo.getSocket();
@@ -77,6 +82,7 @@ public class TCPServer extends Thread {
 										break;
 									}
 								}
+
 							}
 						} catch (Exception e) {
 							// TODO: handle exception
@@ -90,7 +96,6 @@ public class TCPServer extends Thread {
 			// TODO: handle exception
 		}
 	}
-
 	private void sendMess(ObjectOutputStream oos, MessInfo messInfo) {
 		try {
 			Thread threadSend = new Thread() {
@@ -161,61 +166,4 @@ public class TCPServer extends Thread {
 			ex.printStackTrace();
 		}
 	}
-
-	public void sendFile(String sourceFilePath, String destinationDir, Socket client) {
-		DataOutputStream outToServer = null;
-		ObjectOutputStream oos = null;
-		ObjectInputStream ois = null;
-
-		try {
-			// make greeting
-			outToServer = new DataOutputStream(client.getOutputStream());
-			outToServer.writeUTF("Hello from " + client.getLocalSocketAddress());
-
-			// get file info
-			FileInfo fileInfo = getFileInfo(sourceFilePath, destinationDir);
-
-			// send file
-			oos = new ObjectOutputStream(client.getOutputStream());
-			oos.writeObject(fileInfo);
-
-			// get confirmation
-			ois = new ObjectInputStream(client.getInputStream());
-			fileInfo = (FileInfo) ois.readObject();
-			if (fileInfo != null) {
-				textAreaLog.append("send file to client " + fileInfo.getStatus() + "\n");
-			}
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} finally {
-			// close all stream
-			closeStream(oos);
-			closeStream(ois);
-			closeStream(outToServer);
-		}
-	}
-
-	private FileInfo getFileInfo(String sourceFilePath, String destinationDir) {
-		FileInfo fileInfo = null;
-		BufferedInputStream bis = null;
-		try {
-			File sourceFile = new File(sourceFilePath);
-			bis = new BufferedInputStream(new FileInputStream(sourceFile));
-			fileInfo = new FileInfo();
-			byte[] fileBytes = new byte[(int) sourceFile.length()];
-			// get file info
-			bis.read(fileBytes, 0, fileBytes.length);
-			fileInfo.setFilename(sourceFile.getName());
-			fileInfo.setDataBytes(fileBytes);
-			fileInfo.setDestinationDirectory(destinationDir);
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		} finally {
-			closeStream(bis);
-		}
-		return fileInfo;
-	}
-
 }

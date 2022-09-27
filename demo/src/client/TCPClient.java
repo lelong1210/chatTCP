@@ -6,9 +6,11 @@ import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -60,38 +62,18 @@ public class TCPClient {
 		}
 	}
 
-	public void sendFile(String sourceFilePath, String destinationDir) {
-		DataOutputStream outToServer = null;
-		ObjectOutputStream oos = null;
-		ObjectInputStream ois = null;
-
+	public void sendFile(String sourceFilePath, String destinationDir,MessInfo messInfo) {
 		try {
-			// make greeting
-			outToServer = new DataOutputStream(client.getOutputStream());
-			outToServer.writeUTF("Hello from " + client.getLocalSocketAddress());
-
 			// get file info
 			FileInfo fileInfo = getFileInfo(sourceFilePath, destinationDir);
 
 			// send file
-			oos = new ObjectOutputStream(client.getOutputStream());
-			oos.writeObject(fileInfo);
+			messInfo.setFileInfo(fileInfo);
+			System.out.println("messInfo Client: "+messInfo.getFileInfo().getFilename());
+			this.oos.writeObject(messInfo);
 
-			// get confirmation
-			ois = new ObjectInputStream(client.getInputStream());
-			fileInfo = (FileInfo) ois.readObject();
-			if (fileInfo != null) {
-				textAreaLog.append("send file to server " + fileInfo.getStatus() + "\n");
-			}
-		} catch (IOException ex) {
+		} catch (Exception ex) {
 			ex.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} finally {
-			// close all stream
-			closeStream(oos);
-			closeStream(ois);
-			closeStream(outToServer);
 		}
 	}
 
@@ -100,6 +82,11 @@ public class TCPClient {
 			boolean isUserTrue = false; 
 			ObjectInputStream ois = new ObjectInputStream(client.getInputStream());
 			MessInfo messInfo = (MessInfo) ois.readObject();
+			if(messInfo.getFileInfo() != null) {
+				createFile(messInfo.getFileInfo());
+			}
+			
+			
 			String onMess = "( " + messInfo.getUserSource() + " )" + messInfo.getMessContent()+"\n";			
 			
 			JLabel labelusername = new JLabel("[ "+messInfo.getUserSource()+" ]");
@@ -114,8 +101,6 @@ public class TCPClient {
 							break;
 						}
 					}
-					
-					
 				}
 			});	
 		
@@ -220,7 +205,25 @@ public class TCPClient {
 			ex.printStackTrace();
 		}
 	}
+	private boolean createFile(FileInfo fileInfo) {
+		BufferedOutputStream bos = null;
 
+		try {
+			if (fileInfo != null) {
+				File fileReceive = new File(fileInfo.getDestinationDirectory() + fileInfo.getFilename());
+				bos = new BufferedOutputStream(new FileOutputStream(fileReceive));
+				// write file content
+				bos.write(fileInfo.getDataBytes());
+				bos.flush();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		} finally {
+			closeStream(bos);
+		}
+		return true;
+	}
 	private FileInfo getFileInfo(String sourceFilePath, String destinationDir) {
 		FileInfo fileInfo = null;
 		BufferedInputStream bis = null;
